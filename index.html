@@ -304,307 +304,155 @@ const GLOBAL_STYLES = `
     clip-path:ellipse(55% 100% at 50% 100%);
   }
 
-  @media (max-width:768px) { .section-pad { padding:56px 16px; } }
+  /* RESPONSIVE */
+  img { max-width:100%; height:auto; display:block; }
+  html, body { overflow-x:hidden; max-width:100vw; }
+  button, a { -webkit-tap-highlight-color:rgba(196,118,42,.15); touch-action:manipulation; }
+  @media (max-width:1024px) { .section-pad { padding:72px 20px; } }
+  @media (max-width:900px)  { .section-pad { padding:60px 18px; } }
+  @media (max-width:768px)  { .section-pad { padding:52px 16px; } h1{font-size:clamp(1.5rem,6vw,2.4rem)!important;} h2{font-size:clamp(1.2rem,5vw,1.8rem)!important;} }
+  @media (max-width:480px)  { .section-pad { padding:40px 14px; } .btn-primary{padding:11px 22px;font-size:.82rem;} }
+  @media (min-width:768px) and (max-width:1024px) and (orientation:landscape) { .section-pad{padding:60px 28px;} }
+  @supports (padding: max(0px)) { nav { padding-left:max(16px,env(safe-area-inset-left)); padding-right:max(16px,env(safe-area-inset-right)); } }
 `;
 
 // ============================================================
 // NAV — warm cream with brown accents
 // ============================================================
 
+function useWindowWidth() {
+  const [width, setWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1024);
+  useEffect(() => {
+    const handle = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", handle);
+    handle();
+    return () => window.removeEventListener("resize", handle);
+  }, []);
+  return width;
+}
+
 function Nav({ page, setPage, cartCount, user, onAuthClick, onLogout }) {
-  const [scrolled, setScrolled]   = useState(false);
-  const [menuOpen, setMenuOpen]   = useState(false);
-  const [hoveredLink, setHoveredLink] = useState(null);
+  const [scrolled,  setScrolled]  = useState(false);
+  const [menuOpen,  setMenuOpen]  = useState(false);
+  const [hovered,   setHovered]   = useState(null);
+  const width    = useWindowWidth();
+  const isMobile = width < 900;
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    const h = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", h);
+    return () => window.removeEventListener("scroll", h);
   }, []);
 
-  const links = ["Home", "Shop", "Quiz", "Bundle Builder", "Brew Guides", "Origin Map", "Gift Card", "Our Story", "Loyalty", "Referral", "Wholesale", "FAQ", "Contact", "My Account"];
+  const go = (p) => { setPage(p); setMenuOpen(false); setHovered(null); };
 
-  // Group links for the mega dropdown
-  const linkGroups = [
-    { label: "Shop",    items: ["Shop", "Bundle Builder", "Gift Card"] },
-    { label: "Learn",   items: ["Brew Guides", "Origin Map", "Our Story", "Roasting Process"] },
-    { label: "Account", items: ["Loyalty", "Referral", "My Account", "Order Tracking"] },
-    { label: "Info",    items: ["Wholesale", "FAQ", "Contact", "Quiz"] },
+  const groups = [
+    { label:"Shop",    items:["Shop","Bundle Builder","Gift Card"] },
+    { label:"Learn",   items:["Brew Guides","Origin Map","Our Story","Roasting Process"] },
+    { label:"Account", items:["Loyalty","Referral","My Account","Order Tracking"] },
+    { label:"Info",    items:["Wholesale","FAQ","Contact","Quiz"] },
   ];
 
-  return (
-    <nav style={{
-      position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000,
-      background: scrolled
-        ? "rgba(59,31,10,0.97)"
-        : "linear-gradient(180deg, rgba(59,31,10,0.85) 0%, transparent 100%)",
-      backdropFilter: "blur(20px)",
-      borderBottom: scrolled ? "1px solid rgba(196,118,42,0.30)" : "1px solid rgba(196,118,42,0.15)",
-      boxShadow: scrolled ? "0 4px 32px rgba(0,0,0,0.5)" : "none",
-      transition: "all 0.4s ease",
-      padding: "0 24px",
-    }}>
-      <div style={{ maxWidth: 1120, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", height: 74 }}>
+  const navBg   = scrolled ? "rgba(251,245,232,0.97)" : "rgba(59,31,10,0.92)";
+  const txtMain = scrolled ? "#2C1505" : "#FBF5E8";
+  const txtSub  = scrolled ? "#5C3317" : "rgba(251,245,232,0.72)";
+  const border  = scrolled ? "rgba(91,46,14,.22)" : "rgba(251,245,232,.22)";
 
-        {/* -- Logo -- */}
-        <div onClick={() => setPage("Home")} style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer", flexShrink: 0 }}>
-          <img src={IMAGES.logo} alt="Café Cacao"
-            style={{ width: 46, height: 46, objectFit: "contain",
-              filter: "drop-shadow(0 0 10px rgba(232,151,60,0.55))",
-              mixBlendMode: "normal", clipPath:"inset(0 0 18% 0)",
-            }} />
+  return (
+    <nav style={{ position:"fixed", top:0, left:0, right:0, zIndex:1000, background:navBg, backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)", borderBottom:`2px solid ${scrolled?"rgba(196,118,42,.20)":"rgba(251,245,232,.08)"}`, boxShadow:scrolled?"0 2px 20px rgba(59,31,10,.14)":"none", transition:"all .4s ease" }}>
+      <div style={{ maxWidth:1120, margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between", height:isMobile?64:72, padding:`0 ${isMobile?"16px":"24px"}` }}>
+
+        {/* Logo */}
+        <div onClick={()=>go("Home")} style={{ display:"flex", alignItems:"center", gap:9, cursor:"pointer", flexShrink:0 }}>
+          <div style={{ width:isMobile?38:46, height:isMobile?38:46, overflow:"hidden", borderRadius:"50%", background:"#000", flexShrink:0 }}>
+            <img src={IMAGES.logo} alt="Café Cacao" style={{ width:"100%", height:"125%", objectFit:"cover", objectPosition:"center top" }} />
+          </div>
           <div>
-            <div style={{ fontFamily: "'Playfair Display', serif", color: "#2C1505", fontSize: "1.15rem", fontWeight: 700, letterSpacing: "0.05em", lineHeight: 1.1 }}>Café Cacao</div>
-            <div style={{ fontFamily: "'Lato', sans-serif", color: "#C4762A", fontSize: "0.55rem", fontWeight: 600, letterSpacing: "0.25em", textTransform: "uppercase" }}>Dominican Republic</div>
+            <div style={{ fontFamily:"'Playfair Display',serif", color:txtMain, fontSize:isMobile?"0.95rem":"1.1rem", fontWeight:700, lineHeight:1.1 }}>Café Cacao</div>
+            {!isMobile && <div style={{ fontFamily:"'Lato',sans-serif", color:"#C4762A", fontSize:"0.52rem", fontWeight:700, letterSpacing:"0.22em", textTransform:"uppercase" }}>Dominican Republic</div>}
           </div>
         </div>
 
-        {/* -- Desktop nav groups -- */}
-        <div style={{ display: "flex", gap: 4, alignItems: "center", flex: 1, justifyContent: "center" }}>
-          {linkGroups.map(group => (
-            <div key={group.label}
-              style={{ position: "relative" }}
-              onMouseEnter={() => setHoveredLink(group.label)}
-              onMouseLeave={() => setHoveredLink(null)}>
+        {/* Desktop groups */}
+        {!isMobile && (
+          <div style={{ display:"flex", gap:2, alignItems:"center", flex:1, justifyContent:"center" }}>
+            {groups.map(g => (
+              <div key={g.label} style={{ position:"relative" }}
+                onMouseEnter={()=>setHovered(g.label)} onMouseLeave={()=>setHovered(null)}>
+                <button style={{ background:g.items.includes(page)?"rgba(196,118,42,.15)":hovered===g.label?"rgba(196,118,42,.08)":"none", border:"none", borderBottom:g.items.includes(page)?"2px solid #C4762A":"2px solid transparent", color:scrolled?(g.items.includes(page)?"#C4762A":"#5C3317"):(g.items.includes(page)?"#E8A020":"#FBF5E8"), fontSize:"0.72rem", fontFamily:"'Lato',sans-serif", fontWeight:700, letterSpacing:"0.12em", textTransform:"uppercase", padding:"8px 14px", cursor:"pointer", borderRadius:"6px 6px 0 0", display:"flex", alignItems:"center", gap:4, transition:"all .2s" }}>
+                  {g.label} <span style={{ fontSize:"0.58rem", opacity:.7 }}>▾</span>
+                </button>
+                {hovered===g.label && (
+                  <div style={{ position:"absolute", top:"100%", left:"50%", transform:"translateX(-50%)", background:"#3B1F0A", border:"1px solid rgba(196,118,42,.35)", borderTop:"3px solid #C4762A", borderRadius:"0 0 10px 10px", padding:"6px 0", minWidth:182, boxShadow:"0 16px 40px rgba(59,31,10,.45)", zIndex:200 }}>
+                    {g.items.map(item=>(
+                      <button key={item} onClick={()=>go(item)} style={{ display:"block", width:"100%", textAlign:"left", background:page===item?"rgba(196,118,42,.18)":"none", border:"none", borderLeft:page===item?"3px solid #C4762A":"3px solid transparent", color:page===item?"#E8A020":"#FBF5E8", fontFamily:"'Lato',sans-serif", fontSize:"0.82rem", fontWeight:page===item?700:400, padding:"10px 20px", cursor:"pointer", transition:"all .15s" }}
+                        onMouseEnter={e=>{if(page!==item){e.currentTarget.style.paddingLeft="24px";e.currentTarget.style.background="rgba(196,118,42,.10)";e.currentTarget.style.color="#E8A020";}}}
+                        onMouseLeave={e=>{if(page!==item){e.currentTarget.style.paddingLeft="20px";e.currentTarget.style.background="none";e.currentTarget.style.color="#FBF5E8";}}}>
+                        {item}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
 
-              {/* Group trigger */}
-              <button style={{
-                background: "none", border: "none",
-                color: group.items.includes(page) ? "#C4762A" : "#FDF5E6",
-                fontSize: "0.72rem",
-                fontFamily: "'Lato', sans-serif",
-                fontWeight: 600,
-                letterSpacing: "0.14em",
-                textTransform: "uppercase",
-                padding: "8px 14px",
-                cursor: "pointer",
-                borderRadius: 6,
-                display: "flex", alignItems: "center", gap: 5,
-                background: group.items.includes(page) ? "rgba(232,151,60,0.12)" : hoveredLink === group.label ? "rgba(255,235,195,0.07)" : "transparent",
-                borderBottom: group.items.includes(page) ? "1.5px solid #E8973C" : "1.5px solid transparent",
-                transition: "all 0.2s",
-              }}>
-                {group.label}
-                <span style={{ fontSize: "0.6rem", opacity: 0.7, marginTop: 1 }}>▾</span>
-              </button>
-
-              {/* Dropdown */}
-              {hoveredLink === group.label && (
-                <div style={{
-                  position: "absolute", top: "calc(100% + 8px)", left: "50%", transform: "translateX(-50%)",
-                  background: "rgba(59,31,10,0.97)",
-                  backdropFilter: "blur(24px)",
-                  border: "1px solid rgba(232,151,60,0.25)",
-                  borderTop: "2px solid #E8973C",
-                  borderRadius: "0 0 10px 10px",
-                  padding: "8px 0",
-                  minWidth: 180,
-                  boxShadow: "0 20px 48px rgba(0,0,0,0.7)",
-                  animation: "fadeUp 0.15s ease forwards",
-                  zIndex: 100,
-                }}>
-                  {group.items.map(item => (
-                    <button key={item} onClick={() => { setPage(item); setHoveredLink(null); }}
-                      style={{
-                        display: "block", width: "100%", textAlign: "left",
-                        background: page === item ? "rgba(232,151,60,0.14)" : "none",
-                        border: "none",
-                        borderLeft: page === item ? "3px solid #E8973C" : "3px solid transparent",
-                        color: page === item ? "#C4762A" : "#FDF5E6",
-                        fontFamily: "'Lato', sans-serif",
-                        fontSize: "0.82rem",
-                        fontWeight: page === item ? 600 : 400,
-                        padding: "10px 20px",
-                        cursor: "pointer",
-                        letterSpacing: "0.04em",
-                        transition: "all 0.15s",
-                      }}
-                      onMouseEnter={e => {
-                        if (page !== item) {
-                          e.currentTarget.style.background = "rgba(255,235,195,0.08)";
-                          e.currentTarget.style.color = "#FDF5E6";
-                          e.currentTarget.style.paddingLeft = "24px";
-                        }
-                      }}
-                      onMouseLeave={e => {
-                        if (page !== item) {
-                          e.currentTarget.style.background = "none";
-                          e.currentTarget.style.color = "#FDF5E6";
-                          e.currentTarget.style.paddingLeft = "20px";
-                        }
-                      }}>
-                      {item}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* -- Right side actions -- */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-
+        {/* Right actions */}
+        <div style={{ display:"flex", alignItems:"center", gap:isMobile?8:10, flexShrink:0 }}>
           {/* Auth */}
-          {user ? (
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <button onClick={() => setPage("My Account")}
-                style={{
-                  background: "rgba(232,151,60,0.12)",
-                  border: "1.5px solid rgba(232,151,60,0.40)",
-                  borderRadius: 20,
-                  padding: "5px 14px 5px 8px",
-                  display: "flex", alignItems: "center", gap: 7,
-                  cursor: "pointer",
-                  transition: "all 0.2s",
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = "rgba(196,118,42,0.30)"}
-                onMouseLeave={e => e.currentTarget.style.background = "rgba(232,151,60,0.12)"}>
-                <div style={{ width: 26, height: 26, borderRadius: "50%", background: "linear-gradient(135deg, #A34E1A, #E8973C)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "0.85rem", color: "#FFFFFF" }}>
-                  {user.avatar}
-                </div>
-                <span style={{ fontFamily: "'Lato', sans-serif", color: "#2C1505", fontSize: "0.78rem", fontWeight: 600 }}>
-                  {user.name.split(" ")[0]}
-                </span>
-              </button>
-              <button onClick={onLogout}
-                style={{ background: "none", border: "none", color: "#8B6040", fontFamily: "'Lato', sans-serif", fontSize: "0.7rem", cursor: "pointer", letterSpacing: "0.06em", textTransform: "uppercase" }}>
-                Out
-              </button>
-            </div>
-          ) : (
-            <button onClick={onAuthClick}
-              style={{
-                background: "linear-gradient(135deg, #A34E1A, #E8973C)",
-                color: "#FFFFFF",
-                border: "none",
-                borderRadius: 4,
-                padding: "8px 18px",
-                fontFamily: "'Lato', sans-serif",
-                fontSize: "0.72rem",
-                fontWeight: 700,
-                cursor: "pointer",
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                boxShadow: "0 4px 14px rgba(163,78,26,0.45)",
-                transition: "all 0.2s",
-              }}
-              onMouseEnter={e => e.currentTarget.style.transform = "translateY(-1px)"}
-              onMouseLeave={e => e.currentTarget.style.transform = ""}>
-              Log In
-            </button>
+          {!isMobile && (
+            user ? (
+              <div style={{ display:"flex", alignItems:"center", gap:7 }}>
+                <button onClick={()=>go("My Account")} style={{ background:"rgba(196,118,42,.15)", border:"1.5px solid rgba(196,118,42,.45)", borderRadius:20, padding:"5px 14px 5px 8px", display:"flex", alignItems:"center", gap:7, cursor:"pointer" }}
+                  onMouseEnter={e=>e.currentTarget.style.background="rgba(196,118,42,.28)"}
+                  onMouseLeave={e=>e.currentTarget.style.background="rgba(196,118,42,.15)"}>
+                  <div style={{ width:26, height:26, borderRadius:"50%", background:"linear-gradient(135deg,#A34E1A,#C4762A)", display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'Playfair Display',serif", fontWeight:700, fontSize:".85rem", color:"#FFF" }}>{user.avatar}</div>
+                  <span style={{ fontFamily:"'Lato',sans-serif", color:txtMain, fontSize:".78rem", fontWeight:700 }}>{user.name.split(" ")[0]}</span>
+                </button>
+                <button onClick={onLogout} style={{ background:"none", border:"none", color:txtSub, fontFamily:"'Lato',sans-serif", fontSize:".68rem", fontWeight:700, cursor:"pointer", textTransform:"uppercase" }}>Out</button>
+              </div>
+            ) : (
+              <button onClick={onAuthClick} className="btn-primary" style={{ padding:"8px 18px", fontSize:".72rem" }}>Log In</button>
+            )
           )}
 
           {/* Cart */}
-          <button onClick={() => setPage("Cart")}
-            style={{
-              background: cartCount > 0 ? "rgba(232,151,60,0.15)" : "none",
-              border: cartCount > 0 ? "1.5px solid rgba(232,151,60,0.4)" : "1.5px solid rgba(245,234,208,0.15)",
-              borderRadius: 8,
-              color: "#2C1505",
-              fontSize: "1.1rem",
-              position: "relative",
-              padding: "6px 10px",
-              cursor: "pointer",
-              transition: "all 0.2s",
-            }}
-            onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(232,151,60,0.6)"}
-            onMouseLeave={e => e.currentTarget.style.borderColor = cartCount > 0 ? "rgba(232,151,60,0.4)" : "rgba(245,234,208,0.15)"}>
+          <button onClick={()=>go("Cart")} style={{ background:cartCount>0?"rgba(196,118,42,.18)":"none", border:`1.5px solid ${cartCount>0?"rgba(196,118,42,.45)":border}`, borderRadius:8, color:scrolled?"#5C2E0E":"#FBF5E8", fontSize:"1.05rem", position:"relative", padding:"6px 10px", cursor:"pointer", minWidth:38 }}>
             🛒
-            {cartCount > 0 && (
-              <span style={{ position: "absolute", top: -5, right: -5, background: "#C4762A", color: "#2C1505", borderRadius: "50%", width: 18, height: 18, fontSize: "0.62rem", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Lato', sans-serif", fontWeight: 800 }}>
-                {cartCount}
-              </span>
-            )}
+            {cartCount>0 && <span style={{ position:"absolute", top:-5, right:-5, background:"#C8381A", color:"#fff", borderRadius:"50%", width:18, height:18, fontSize:".6rem", display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'Lato',sans-serif", fontWeight:800 }}>{cartCount}</span>}
           </button>
 
-          {/* Hamburger — mobile only */}
-          <button onClick={() => setMenuOpen(!menuOpen)}
-            style={{
-              background: menuOpen ? "rgba(232,151,60,0.15)" : "none",
-              border: "1.5px solid rgba(245,234,208,0.20)",
-              borderRadius: 6,
-              color: "#2C1505",
-              fontSize: "1.1rem",
-              padding: "6px 10px",
-              cursor: "pointer",
-              display: window.innerWidth >= 900 ? "none" : "flex",
-              alignItems: "center", justifyContent: "center",
-              transition: "all 0.2s",
-            }}>
-            {menuOpen ? "✕" : "☰"}
-          </button>
+          {/* Hamburger */}
+          {isMobile && (
+            <button onClick={()=>setMenuOpen(!menuOpen)} style={{ background:menuOpen?"rgba(196,118,42,.18)":"none", border:`1.5px solid ${border}`, borderRadius:6, color:scrolled?"#5C2E0E":"#FBF5E8", fontSize:"1.1rem", padding:"6px 11px", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+              {menuOpen?"✕":"☰"}
+            </button>
+          )}
         </div>
       </div>
 
-      {/* -- Mobile slide-down menu -- */}
-      {menuOpen && (
-        <div style={{
-          background: "rgba(59,31,10,0.97)",
-          backdropFilter: "blur(20px)",
-          borderTop: "1px solid rgba(232,151,60,0.20)",
-          padding: "16px 0 24px",
-          boxShadow: "0 16px 40px rgba(0,0,0,0.7)",
-          animation: "fadeUp 0.2s ease forwards",
-        }}>
-          {/* Mobile sections */}
-          {linkGroups.map(group => (
-            <div key={group.label} style={{ padding: "4px 0" }}>
-              <div style={{
-                fontFamily: "'Lato', sans-serif",
-                color: "#C4762A",
-                fontSize: "0.62rem",
-                fontWeight: 700,
-                letterSpacing: "0.25em",
-                textTransform: "uppercase",
-                padding: "10px 28px 6px",
-              }}>
-                {group.label}
-              </div>
-              {group.items.map(item => (
-                <button key={item}
-                  onClick={() => { setPage(item); setMenuOpen(false); }}
-                  style={{
-                    display: "block",
-                    width: "100%",
-                    textAlign: "left",
-                    background: page === item ? "rgba(232,151,60,0.12)" : "none",
-                    border: "none",
-                    borderLeft: page === item ? "3px solid #E8973C" : "3px solid transparent",
-                    color: page === item ? "#C4762A" : "#FDF5E6",
-                    fontFamily: "'Playfair Display', serif",
-                    fontSize: "1.05rem",
-                    fontWeight: page === item ? 700 : 400,
-                    padding: "9px 28px",
-                    cursor: "pointer",
-                    letterSpacing: "0.02em",
-                    transition: "all 0.15s",
-                  }}
-                  onMouseEnter={e => { if (page !== item) e.currentTarget.style.color = "#C4762A"; }}
-                  onMouseLeave={e => { if (page !== item) e.currentTarget.style.color = "#FDF5E6"; }}>
+      {/* Mobile menu */}
+      {menuOpen && isMobile && (
+        <div style={{ background:"rgba(59,31,10,0.98)", borderTop:"2px solid rgba(196,118,42,.25)", padding:"8px 0 28px", maxHeight:"80vh", overflowY:"auto", WebkitOverflowScrolling:"touch" }}>
+          {groups.map(g=>(
+            <div key={g.label}>
+              <div style={{ fontFamily:"'Lato',sans-serif", color:"#E8A020", fontSize:".62rem", fontWeight:700, letterSpacing:".22em", textTransform:"uppercase", padding:"12px 20px 5px" }}>{g.label}</div>
+              {g.items.map(item=>(
+                <button key={item} onClick={()=>go(item)} style={{ display:"block", width:"100%", textAlign:"left", background:page===item?"rgba(196,118,42,.15)":"none", border:"none", borderLeft:page===item?"3px solid #C4762A":"3px solid transparent", color:page===item?"#E8A020":"#FBF5E8", fontFamily:"'Playfair Display',serif", fontSize:"1rem", fontWeight:page===item?700:400, padding:"11px 20px", cursor:"pointer" }}>
                   {item}
                 </button>
               ))}
             </div>
           ))}
-
-          {/* Mobile auth */}
-          <div style={{ padding: "16px 28px 0", borderTop: "1px solid rgba(232,151,60,0.12)", marginTop: 8 }}>
+          <div style={{ padding:"16px 20px 0", borderTop:"1px solid rgba(196,118,42,.15)", marginTop:10 }}>
             {user ? (
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div style={{ fontFamily: "'Lato', sans-serif", color: "#2C1505", fontSize: "0.88rem" }}>
-                  👤 {user.name}
-                </div>
-                <button onClick={() => { onLogout(); setMenuOpen(false); }}
-                  style={{ background: "none", border: "1px solid rgba(245,234,208,0.2)", borderRadius: 4, color: "#8B6040", fontFamily: "'Lato', sans-serif", fontSize: "0.72rem", padding: "6px 12px", cursor: "pointer" }}>
-                  Sign Out
-                </button>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                <span style={{ fontFamily:"'Lato',sans-serif", color:"#FBF5E8", fontSize:".9rem" }}>👤 {user.name}</span>
+                <button onClick={()=>{onLogout();setMenuOpen(false);}} style={{ background:"none", border:"1px solid rgba(251,245,232,.3)", borderRadius:4, color:"#E8D9BC", fontFamily:"'Lato',sans-serif", fontSize:".75rem", padding:"7px 14px", cursor:"pointer" }}>Sign Out</button>
               </div>
             ) : (
-              <button className="btn-primary" onClick={() => { onAuthClick(); setMenuOpen(false); }}
-                style={{ width: "100%", padding: "12px", fontSize: "0.82rem" }}>
-                Log In / Sign Up
-              </button>
+              <button className="btn-primary" onClick={()=>{onAuthClick();setMenuOpen(false);}} style={{ width:"100%", padding:"13px", fontSize:".85rem" }}>Log In / Sign Up</button>
             )}
           </div>
         </div>
@@ -613,26 +461,77 @@ function Nav({ page, setPage, cartCount, user, onAuthClick, onLogout }) {
   );
 }
 
+
+// ============================================================
+// EMAIL POPUP — appears 2.5s after page load
+// ============================================================
 function EmailPopup({ onClose }) {
-  const [email, setEmail] = useState("");
+  const [email, setEmail]         = useState("");
   const [submitted, setSubmitted] = useState(false);
+
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(10,8,4,0.65)", zIndex: 2000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, backdropFilter: "blur(4px)" }}>
-      <div style={{ background: "#FDF5E6", border: "1px solid rgba(200,98,42,0.25)", borderRadius: 14, padding: "44px 36px", maxWidth: 480, width: "100%", position: "relative", textAlign: "center", boxShadow: "0 24px 80px rgba(10,8,4,0.25)" }}>
-        {/* Gold top accent line */}
-        <div style={{ position: "absolute", top: 0, left: "20%", right: "20%", height: 3, background: "linear-gradient(90deg, transparent, #D4873C, transparent)", borderRadius: "0 0 4px 4px" }} />
-        <button onClick={onClose} style={{ position: "absolute", top: 14, right: 18, background: "none", border: "none", color: "#7AC4BE", fontSize: "1.2rem", lineHeight: 1 }}>✕</button>
-        <div style={{ fontSize: "2.8rem", marginBottom: 10 }}>☕</div>
-        <h2 style={{ fontFamily: "'Playfair Display', serif", color: "#2C1505", fontSize: "1.75rem", fontWeight: 600, marginBottom: 8 }}>Join the First Roast Drop</h2>
-        <div style={{ width: 40, height: 1.5, background: "linear-gradient(90deg, transparent, #D4873C, transparent)", margin: "0 auto 16px" }} />
-        <p style={{ color: "#B85A22", fontSize: "0.95rem", marginBottom: 24, lineHeight: 1.75, fontFamily: "'Lato', sans-serif", fontWeight: 300 }}>Be first in line when fresh batches drop. No spam — just roast alerts and exclusive discounts for early members.</p>
-        {submitted ? (
-          <p style={{ fontFamily: "'Playfair Display', serif", color: "#7EC97A", fontSize: "1.2rem", fontWeight: 600 }}>You're on the list. ¡Gracias! ☕</p>
+    <div style={{ position:"fixed", inset:0, background:"rgba(59,31,10,0.70)", zIndex:2000, display:"flex", alignItems:"center", justifyContent:"center", padding:20, backdropFilter:"blur(6px)", WebkitBackdropFilter:"blur(6px)" }}>
+      <div style={{ background:"#FFFFFF", borderRadius:14, padding:"40px 32px", maxWidth:420, width:"100%", position:"relative", boxShadow:"0 24px 64px rgba(59,31,10,.30)", border:"2px solid rgba(196,118,42,.20)" }}>
+
+        {/* Top accent */}
+        <div style={{ position:"absolute", top:0, left:0, right:0, height:4, background:"linear-gradient(90deg, #3B1F0A, #C4762A, #E8A020, #C4762A, #3B1F0A)", borderRadius:"14px 14px 0 0" }} />
+
+        {/* Close button */}
+        <button onClick={onClose} style={{ position:"absolute", top:14, right:16, background:"none", border:"none", color:"#8B6040", fontSize:"1.3rem", cursor:"pointer", lineHeight:1, padding:4 }}>✕</button>
+
+        {!submitted ? (
+          <>
+            {/* Icon */}
+            <div style={{ textAlign:"center", marginBottom:18 }}>
+              <div style={{ fontSize:"2.8rem", marginBottom:8 }}>☕</div>
+              <div style={{ fontFamily:"'Lato',sans-serif", color:"#C4762A", fontSize:"0.72rem", fontWeight:700, letterSpacing:"0.22em", textTransform:"uppercase", marginBottom:8 }}>Welcome to Café Cacao</div>
+              <h2 style={{ fontFamily:"'Playfair Display',serif", color:"#2C1505", fontSize:"1.5rem", fontWeight:700, lineHeight:1.2, marginBottom:10 }}>Get 10% Off Your First Order</h2>
+              <p style={{ fontFamily:"'Lato',sans-serif", color:"#5C3317", fontSize:"0.9rem", lineHeight:1.7, fontWeight:300 }}>
+                Join the Café Cacao community. Be first to know about fresh roast drops, limited batches, and exclusive member discounts.
+              </p>
+            </div>
+
+            {/* Form */}
+            <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="your@email.com"
+                style={{ width:"100%", padding:"13px 16px", fontSize:"0.95rem", borderRadius:8 }}
+                onKeyDown={e => e.key === "Enter" && email && setSubmitted(true)}
+              />
+              <button
+                className="btn-primary"
+                onClick={() => email && setSubmitted(true)}
+                style={{ width:"100%", padding:"13px", fontSize:"0.85rem" }}>
+                Claim My 10% Discount
+              </button>
+              <button onClick={onClose} style={{ background:"none", border:"none", color:"#8B6040", fontFamily:"'Lato',sans-serif", fontSize:"0.78rem", cursor:"pointer", textDecoration:"underline", textAlign:"center" }}>
+                No thanks, I'll pay full price
+              </button>
+            </div>
+
+            {/* Trust line */}
+            <p style={{ fontFamily:"'Lato',sans-serif", color:"#B89878", fontSize:"0.68rem", textAlign:"center", marginTop:14, lineHeight:1.6 }}>
+              No spam. Unsubscribe anytime. We send roast alerts, not ads.
+            </p>
+          </>
         ) : (
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <input value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com"
-              style={{ flex: 1, minWidth: 200, padding: "12px 16px", fontSize: "0.95rem" }} />
-            <button className="btn-primary" onClick={() => setSubmitted(true)}>Subscribe</button>
+          /* Success state */
+          <div style={{ textAlign:"center", padding:"16px 0" }}>
+            <div style={{ fontSize:"3rem", marginBottom:12 }}>🎉</div>
+            <h2 style={{ fontFamily:"'Playfair Display',serif", color:"#2C1505", fontSize:"1.5rem", fontWeight:700, marginBottom:10 }}>You're in!</h2>
+            <p style={{ fontFamily:"'Lato',sans-serif", color:"#5C3317", fontSize:"0.92rem", lineHeight:1.75, fontWeight:300, marginBottom:20 }}>
+              Check your inbox for your <strong style={{ color:"#C4762A" }}>10% off code</strong>. Your first bag of fresh Dominican coffee is one step closer.
+            </p>
+            <div style={{ background:"#FBF5E8", borderRadius:10, padding:"16px 20px", marginBottom:20, border:"1.5px solid rgba(196,118,42,.25)" }}>
+              <div style={{ fontFamily:"'Lato',sans-serif", color:"#8B6040", fontSize:"0.68rem", fontWeight:700, letterSpacing:"0.15em", textTransform:"uppercase", marginBottom:4 }}>Your discount code</div>
+              <div style={{ fontFamily:"'Playfair Display',serif", color:"#C4762A", fontSize:"1.4rem", fontWeight:700, letterSpacing:"0.1em" }}>WELCOME10</div>
+            </div>
+            <button className="btn-primary" onClick={onClose} style={{ width:"100%", padding:"13px", fontSize:"0.85rem" }}>
+              Start Shopping →
+            </button>
           </div>
         )}
       </div>
@@ -670,7 +569,7 @@ function HomePage({ setPage, addToCart }) {
       {showPopup && <EmailPopup onClose={() => setShowPopup(false)} />}
 
       {/* Hero */}
-      <div style={{ position: "relative", height: "100vh", minHeight: 640, overflow: "hidden" }}>
+      <div style={{ position: "relative", height: "100svh", minHeight: 520, overflow: "hidden" }}>
         {/* Background landscape photo */}
         <img src={IMAGES.hero} alt="Dominican highlands" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 30%" }} />
 
@@ -739,7 +638,7 @@ function HomePage({ setPage, addToCart }) {
       </div>
 
       {/* Story snapshot */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0, maxWidth: "100%", overflow: "hidden" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "clamp(300px,50%,600px) 1fr", gap: 0, maxWidth: "100%", overflow: "hidden" }}>
         <img src={IMAGES.farm} alt="Dominican farm" style={{ width: "100%", height: 380, objectFit: "cover" }} />
         <div style={{ background: "#FFFFFF", display: "flex", alignItems: "center", padding: "52px 44px", borderLeft: "1px solid rgba(200,98,42,0.15)" }}>
           <div>
@@ -759,7 +658,7 @@ function HomePage({ setPage, addToCart }) {
           <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(2rem, 4vw, 3rem)", color: "#2C1505", fontWeight: 700 }}>Our Coffees</h2>
           <div style={{ width: 48, height: 2, background: "linear-gradient(90deg, transparent, #C8622A, transparent)", margin: "16px auto 0" }} />
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 28 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(240px,100%), 1fr))", gap: 28 }}>
           {PRODUCTS.map(p => (
             <ProductCard key={p.id} product={p} addToCart={addToCart} setPage={setPage} />
           ))}
@@ -862,7 +761,7 @@ function ReviewSection() {
           <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(1.8rem, 3vw, 2.6rem)", color: "#2C1505", fontWeight: 700 }}>What People Are Saying</h2>
           <div style={{ width: 60, height: 3, background: "linear-gradient(90deg, transparent, #E8A020, transparent)", margin: "14px auto 0" }} />
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 20 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(240px,100%), 1fr))", gap: 20 }}>
           {reviews.map((r, i) => (
             <div key={i} className="glass" style={{ padding: "28px 24px" }}>
               <div style={{ color: "#E8A020", fontSize: "1.1rem", marginBottom: 12, letterSpacing: "0.05em" }}>{"★".repeat(r.stars)}</div>
@@ -3275,7 +3174,7 @@ function CustomerProfile({ user, setUser, setPage, orders, points, setPoints }) 
   return (
     <div style={{ paddingTop:90 }}>
       {/* Header */}
-      <div style={{ background:"linear-gradient(160deg, #1C1C17, #22201A)", padding:"56px 24px 0" }}>
+      <div style={{ background:"linear-gradient(160deg, #3B1F0A, #5C2E0E)", padding:"56px 24px 0" }}>
         <div style={{ maxWidth:1120, margin:"0 auto" }}>
           <div style={{ display:"flex", alignItems:"flex-end", gap:24, paddingBottom:0, flexWrap:"wrap" }}>
             {/* Avatar */}
@@ -3457,7 +3356,7 @@ function CustomerProfile({ user, setUser, setPage, orders, points, setPoints }) 
                       { l:"Next Order", v:user.subscription.nextDate    },
                     ].map(f => (
                       <div key={f.l}>
-                        <div style={{ fontFamily:"'Lato', sans-serif", fontSize:"0.68rem", fontWeight:600, letterSpahttps://abovegraphx.github.io/cing:"0.14em", textTransform:"uppercase", color:"#B8A07A", marginBottom:3 }}>{f.l}</div>
+                        <div style={{ fontFamily:"'Lato', sans-serif", fontSize:"0.68rem", fontWeight:600, letterSpacing:"0.14em", textTransform:"uppercase", color:"#B8A07A", marginBottom:3 }}>{f.l}</div>
                         <div style={{ fontFamily:"'Playfair Display', serif", color:"#5C2E0E", fontSize:"1rem", fontWeight:600 }}>{f.v}</div>
                       </div>
                     ))}

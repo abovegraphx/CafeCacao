@@ -1,571 +1,274 @@
-import { useState } from "react";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Café Cacao</title>
 
-const PRODUCTS = [
-  { id:1, size:"6 oz",  price:12.99, badge:"Try It",      color:"#C4762A" },
-  { id:2, size:"12 oz", price:21.99, badge:"Most Popular", color:"#8B5A2B" },
-  { id:3, size:"16 oz", price:27.99, badge:"Best Value",   color:"#5C2E0E" },
-];
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 
-const PAGES = ["Home","Shop","Loyalty","My Account","Our Story","FAQ","Contact"];
-
-const CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Lato:wght@300;400;700&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'Lato',sans-serif;background:#FBF5E8;color:#2C1505;overflow-x:hidden;}
-  h1,h2,h3,h4{font-family:'Playfair Display',serif;color:#2C1505;}
-  .btn{background:linear-gradient(135deg,#A34E1A,#C4762A);color:#fff;border:none;padding:12px 28px;border-radius:30px;font-family:'Lato',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
-  .btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(163,78,26,.4);}
-  .btn-outline{background:transparent;color:#FBF5E8;border:2px solid rgba(251,245,232,.5);padding:11px 26px;border-radius:30px;font-family:'Lato',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;}
-  select,input{background:#fff;border:1.5px solid rgba(196,118,42,.35);border-radius:6px;color:#2C1505;font-family:'Lato',sans-serif;font-size:.9rem;padding:9px 12px;width:100%;}
-  select:focus,input:focus{outline:none;border-color:#C4762A;}
-`;
-
-function Nav({ page, setPage, cartCount }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <nav style={{ position:"fixed",top:0,left:0,right:0,zIndex:100,background:"rgba(59,31,10,.95)",backdropFilter:"blur(12px)",borderBottom:"1px solid rgba(196,118,42,.2)",padding:"0 20px" }}>
-      <div style={{ maxWidth:1100,margin:"0 auto",display:"flex",alignItems:"center",justifyContent:"space-between",height:64 }}>
-        <div onClick={()=>setPage("Home")} style={{ cursor:"pointer",display:"flex",alignItems:"center",gap:10 }}>
-          <div style={{ width:40,height:40,borderRadius:"50%",background:"linear-gradient(135deg,#C4762A,#E8A020)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.3rem" }}>☕</div>
-          <div>
-            <div style={{ fontFamily:"'Playfair Display',serif",color:"#FBF5E8",fontSize:"1rem",fontWeight:700 }}>Café Cacao</div>
-            <div style={{ fontFamily:"'Lato',sans-serif",color:"#C4762A",fontSize:"0.5rem",letterSpacing:".2em",textTransform:"uppercase" }}>Dominican Republic</div>
-          </div>
-        </div>
-        <div style={{ display:"flex",gap:4,alignItems:"center" }}>
-          {["Shop","Loyalty","Our Story","FAQ"].map(p=>(
-            <button key={p} onClick={()=>setPage(p)} style={{ background:page===p?"rgba(196,118,42,.18)":"none",border:"none",borderBottom:page===p?"2px solid #C4762A":"2px solid transparent",color:page===p?"#E8A020":"rgba(251,245,232,.8)",fontSize:".72rem",fontFamily:"'Lato',sans-serif",fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",padding:"8px 12px",cursor:"pointer" }}>
-              {p}
-            </button>
-          ))}
-          <button onClick={()=>setPage("My Account")} style={{ background:"rgba(196,118,42,.15)",border:"1.5px solid rgba(196,118,42,.4)",borderRadius:20,color:"#FBF5E8",fontFamily:"'Lato',sans-serif",fontSize:".72rem",fontWeight:700,padding:"7px 14px",cursor:"pointer",marginLeft:4 }}>Log In</button>
-          <button onClick={()=>setPage("Shop")} style={{ background:"none",border:"1.5px solid rgba(251,245,232,.25)",borderRadius:8,color:"#FBF5E8",fontSize:"1rem",padding:"6px 10px",cursor:"pointer",position:"relative",marginLeft:4 }}>
-            🛒{cartCount>0&&<span style={{ position:"absolute",top:-5,right:-5,background:"#C8381A",color:"#fff",borderRadius:"50%",width:16,height:16,fontSize:".58rem",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800 }}>{cartCount}</span>}
-          </button>
-        </div>
-      </div>
-    </nav>
-  );
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
-function HomePage({ setPage }) {
-  return (
-    <div>
-      {/* Hero */}
-      <div style={{ minHeight:"100vh",background:"linear-gradient(160deg,#1A0D02,#3B1F0A,#5C2E0E)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",padding:"100px 24px 60px",position:"relative",overflow:"hidden" }}>
-        <div style={{ position:"absolute",top:"40%",left:"50%",transform:"translate(-50%,-50%)",width:600,height:600,background:"radial-gradient(circle,rgba(196,118,42,.15) 0%,transparent 65%)",borderRadius:"50%",pointerEvents:"none" }} />
-        <div style={{ fontSize:"clamp(5rem,15vw,9rem)",marginBottom:8,filter:"drop-shadow(0 0 40px rgba(196,118,42,.6))",animation:"float 4s ease-in-out infinite" }}>☕</div>
-        <div style={{ color:"#C4762A",fontFamily:"'Lato',sans-serif",fontWeight:700,letterSpacing:".25em",textTransform:"uppercase",fontSize:".72rem",marginBottom:14 }}>Dominican Republic · Small-Batch · Fresh-Roasted</div>
-        <h1 style={{ fontFamily:"'Playfair Display',serif",color:"#FBF5E8",fontSize:"clamp(2.2rem,6vw,4rem)",fontWeight:900,lineHeight:1.1,marginBottom:16,maxWidth:700 }}>
-          Coffee Is Our<br/><span style={{ color:"#E8A020" }}>Passion</span>
-        </h1>
-        <div style={{ width:60,height:3,background:"linear-gradient(90deg,transparent,#C4762A,transparent)",margin:"0 auto 20px" }} />
-        <p style={{ color:"#E8D5B0",fontFamily:"'Lato',sans-serif",fontSize:"clamp(.9rem,2vw,1.1rem)",maxWidth:520,lineHeight:1.8,marginBottom:40,fontWeight:300 }}>
-          Single-origin Dominican highland coffee. Roasted the day you order. Shipped in 24 hours. No warehouses, no sitting on shelves.
-        </p>
-        <div style={{ display:"flex",gap:14,flexWrap:"wrap",justifyContent:"center" }}>
-          <button className="btn" onClick={()=>setPage("Shop")}>Shop Now</button>
-          <button className="btn-outline" onClick={()=>setPage("Our Story")}>Our Story</button>
-        </div>
-
-        {/* Coffee bean decoration */}
-        <div style={{ position:"absolute",bottom:0,left:0,right:0,height:120,background:"linear-gradient(0deg,#FBF5E8,transparent)" }} />
-      </div>
-
-      {/* Features strip */}
-      <div style={{ background:"#FBF5E8",padding:"40px 20px",borderBottom:"1px solid rgba(196,118,42,.15)" }}>
-        <div style={{ maxWidth:900,margin:"0 auto",display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:24 }}>
-          {[
-            { icon:"🌍",title:"Dominican Origin",   desc:"Family farms in the highland mountains" },
-            { icon:"⚡",title:"Roasted to Order",   desc:"Roasted the same day you place your order" },
-            { icon:"📦",title:"Ships in 24 Hours",  desc:"Fresh beans at your door, not a warehouse" },
-            { icon:"🌱",title:"Single Origin",      desc:"One farm, one flavor, full traceability" },
-          ].map(f=>(
-            <div key={f.title} style={{ textAlign:"center",padding:"8px" }}>
-              <div style={{ fontSize:"2rem",marginBottom:8 }}>{f.icon}</div>
-              <div style={{ fontFamily:"'Playfair Display',serif",color:"#2C1505",fontSize:"1rem",fontWeight:700,marginBottom:4 }}>{f.title}</div>
-              <div style={{ fontFamily:"'Lato',sans-serif",color:"#8B6040",fontSize:".82rem",fontWeight:300,lineHeight:1.6 }}>{f.desc}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Products preview */}
-      <div style={{ background:"#FFFFFF",padding:"64px 24px" }}>
-        <div style={{ maxWidth:900,margin:"0 auto" }}>
-          <div style={{ textAlign:"center",marginBottom:40 }}>
-            <div style={{ fontFamily:"'Lato',sans-serif",color:"#C4762A",fontWeight:700,letterSpacing:".22em",textTransform:"uppercase",fontSize:".72rem",marginBottom:10 }}>Fresh-Roasted to Order</div>
-            <h2 style={{ fontFamily:"'Playfair Display',serif",fontSize:"clamp(1.8rem,4vw,2.6rem)",color:"#2C1505",fontWeight:700 }}>Our Coffee</h2>
-            <div style={{ width:60,height:3,background:"linear-gradient(90deg,transparent,#C4762A,transparent)",margin:"14px auto 0" }} />
-          </div>
-          <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(260px,100%),1fr))",gap:20 }}>
-            {PRODUCTS.map(p=>(
-              <div key={p.id} style={{ borderRadius:12,overflow:"hidden",border:`2px solid ${p.color}33`,boxShadow:"0 4px 20px rgba(59,31,10,.08)",transition:"transform .2s" }}
-                onMouseEnter={e=>e.currentTarget.style.transform="translateY(-4px)"}
-                onMouseLeave={e=>e.currentTarget.style.transform=""}>
-                <div style={{ background:`linear-gradient(135deg,${p.color},${p.color}cc)`,padding:"28px 20px",textAlign:"center" }}>
-                  <div style={{ fontSize:"3rem",marginBottom:8 }}>☕</div>
-                  <div style={{ background:"rgba(255,255,255,.2)",color:"#fff",borderRadius:20,padding:"3px 12px",fontFamily:"'Lato',sans-serif",fontSize:".65rem",fontWeight:800,letterSpacing:".12em",textTransform:"uppercase",display:"inline-block" }}>{p.badge}</div>
-                </div>
-                <div style={{ padding:"20px",background:"#fff" }}>
-                  <div style={{ display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8 }}>
-                    <div style={{ fontFamily:"'Playfair Display',serif",color:"#2C1505",fontSize:"1.4rem",fontWeight:700 }}>{p.size}</div>
-                    <div style={{ fontFamily:"'Playfair Display',serif",color:p.color,fontSize:"1.4rem",fontWeight:700 }}>${p.price}</div>
-                  </div>
-                  <div style={{ fontFamily:"'Lato',sans-serif",color:"#8B6040",fontSize:".8rem",marginBottom:14,fontStyle:"italic" }}>Chocolate · Brown Sugar · Smooth</div>
-                  <button className="btn" onClick={()=>{}} style={{ width:"100%",padding:"11px",fontSize:".8rem" }}>Add to Cart</button>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div style={{ textAlign:"center",marginTop:32 }}>
-            <button className="btn" onClick={()=>setPage("Shop")}>View Full Shop →</button>
-          </div>
-        </div>
-      </div>
-
-      {/* Reviews */}
-      <div style={{ background:"linear-gradient(160deg,#3B1F0A,#5C2E0E)",padding:"64px 24px" }}>
-        <div style={{ maxWidth:900,margin:"0 auto" }}>
-          <div style={{ textAlign:"center",marginBottom:36 }}>
-            <div style={{ color:"#E8A020",fontFamily:"'Lato',sans-serif",fontWeight:700,letterSpacing:".22em",textTransform:"uppercase",fontSize:".72rem",marginBottom:10 }}>Customer Love</div>
-            <h2 style={{ fontFamily:"'Playfair Display',serif",color:"#FBF5E8",fontSize:"clamp(1.8rem,3vw,2.4rem)",fontWeight:700 }}>What People Are Saying</h2>
-          </div>
-          <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))",gap:18 }}>
-            {[
-              { name:"Maria T.",  text:"Best coffee I've ever had. You can taste the freshness — roasted literally the same day.",stars:5 },
-              { name:"Carlos R.", text:"This is what café tastes like at my abuela's house in DR. Brought me back instantly.",stars:5 },
-              { name:"Jen L.",    text:"Ordered the 16oz. My husband refuses to go back to store-bought coffee ever again.",stars:5 },
-            ].map((r,i)=>(
-              <div key={i} style={{ background:"rgba(251,245,232,.09)",backdropFilter:"blur(12px)",border:"1px solid rgba(251,245,232,.18)",borderTop:"1px solid rgba(251,245,232,.32)",borderRadius:12,padding:"24px 20px" }}>
-                <div style={{ color:"#E8A020",fontSize:"1rem",marginBottom:10 }}>{"★".repeat(r.stars)}</div>
-                <p style={{ fontFamily:"'Lato',sans-serif",color:"#E8D5B0",fontSize:".9rem",lineHeight:1.8,fontStyle:"italic",marginBottom:12,fontWeight:300 }}>"{r.text}"</p>
-                <div style={{ color:"#C4762A",fontFamily:"'Lato',sans-serif",fontSize:".8rem",fontWeight:700 }}>— {r.name}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Footer */}
-      <div style={{ background:"#2C1505",padding:"40px 24px",textAlign:"center" }}>
-        <div style={{ fontFamily:"'Playfair Display',serif",color:"#FBF5E8",fontSize:"1.3rem",fontWeight:700,marginBottom:6 }}>Café Cacao</div>
-        <div style={{ fontFamily:"'Lato',sans-serif",color:"#8B6040",fontSize:".78rem",letterSpacing:".15em",textTransform:"uppercase" }}>Single-Origin · Dominican Republic</div>
-        <div style={{ marginTop:20,fontFamily:"'Lato',sans-serif",color:"#5C3317",fontSize:".72rem" }}>© 2026 Café Cacao. All rights reserved.</div>
-      </div>
-    </div>
-  );
+body{
+    font-family:Lato,sans-serif;
+    background:#FBF5E8;
+    color:#2C1505;
 }
 
-function ShopPage({ addToCart }) {
-  const [grind, setGrind] = useState("Whole Bean");
-  const [sub,   setSub]   = useState("none");
-  const [added, setAdded] = useState(null);
-
-  const handleAdd = (p) => {
-    const discount = sub !== "none" ? 0.10 : 0;
-    addToCart({ ...p, grind, sub, price: parseFloat((p.price*(1-discount)).toFixed(2)), qty:1 });
-    setAdded(p.id);
-    setTimeout(()=>setAdded(null), 2000);
-  };
-
-  return (
-    <div style={{ paddingTop:64 }}>
-      <div style={{ background:"linear-gradient(160deg,#3B1F0A,#5C2E0E)",padding:"60px 20px",textAlign:"center" }}>
-        <div style={{ color:"#E8A020",fontFamily:"'Lato',sans-serif",fontWeight:700,letterSpacing:".22em",textTransform:"uppercase",fontSize:".72rem",marginBottom:12 }}>Single-Origin · Fresh-Roasted Daily</div>
-        <h1 style={{ fontFamily:"'Playfair Display',serif",color:"#FBF5E8",fontSize:"clamp(2rem,5vw,3rem)",fontWeight:700,marginBottom:12 }}>Café Cacao Coffee</h1>
-        <p style={{ color:"#E8D5B0",fontFamily:"'Lato',sans-serif",fontSize:".95rem",fontWeight:300,maxWidth:480,margin:"0 auto" }}>One coffee. Three sizes. Roasted the day you order — Dominican Republic highlands.</p>
-      </div>
-
-      {/* Global grind & freq selectors */}
-      <div style={{ background:"#FFFFFF",borderBottom:"1px solid rgba(196,118,42,.15)",padding:"20px 24px" }}>
-        <div style={{ maxWidth:900,margin:"0 auto",display:"flex",gap:20,flexWrap:"wrap",alignItems:"flex-end" }}>
-          <div style={{ flex:1,minWidth:180 }}>
-            <label style={{ display:"block",fontFamily:"'Lato',sans-serif",fontSize:".68rem",fontWeight:700,letterSpacing:".15em",textTransform:"uppercase",color:"#8B6040",marginBottom:5 }}>Grind</label>
-            <select value={grind} onChange={e=>setGrind(e.target.value)}>
-              {["Whole Bean","Greca Grind","Drip Grind","Espresso Grind"].map(g=><option key={g}>{g}</option>)}
-            </select>
-          </div>
-          <div style={{ flex:1,minWidth:180 }}>
-            <label style={{ display:"block",fontFamily:"'Lato',sans-serif",fontSize:".68rem",fontWeight:700,letterSpacing:".15em",textTransform:"uppercase",color:"#8B6040",marginBottom:5 }}>Frequency</label>
-            <select value={sub} onChange={e=>setSub(e.target.value)}>
-              <option value="none">One-Time Purchase</option>
-              <option value="weekly">Weekly — Save 10%</option>
-              <option value="biweekly">Biweekly — Save 10%</option>
-              <option value="monthly">Monthly — Save 10%</option>
-            </select>
-          </div>
-          {sub!=="none" && <div style={{ fontFamily:"'Lato',sans-serif",color:"#4A7C45",fontSize:".82rem",fontWeight:700,paddingBottom:10 }}>✓ 10% discount applied to all sizes</div>}
-        </div>
-      </div>
-
-      <div style={{ maxWidth:900,margin:"0 auto",padding:"40px 24px" }}>
-        <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(280px,100%),1fr))",gap:24 }}>
-          {PRODUCTS.map(p=>{
-            const discount = sub!=="none" ? 0.10 : 0;
-            const finalPrice = (p.price*(1-discount)).toFixed(2);
-            return (
-              <div key={p.id} style={{ background:"#FFFFFF",borderRadius:14,overflow:"hidden",border:`2px solid ${p.color}`,boxShadow:"0 4px 20px rgba(59,31,10,.09)" }}>
-                <div style={{ background:p.color,padding:"10px 20px",textAlign:"center" }}>
-                  <span style={{ fontFamily:"'Lato',sans-serif",color:"#FFF",fontSize:".68rem",fontWeight:800,letterSpacing:".15em",textTransform:"uppercase" }}>{p.badge}</span>
-                </div>
-                <div style={{ padding:"22px 20px" }}>
-                  <div style={{ display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14 }}>
-                    <div style={{ fontFamily:"'Playfair Display',serif",color:"#2C1505",fontSize:"1.8rem",fontWeight:700 }}>{p.size}</div>
-                    <div style={{ textAlign:"right" }}>
-                      <div style={{ fontFamily:"'Playfair Display',serif",color:p.color,fontSize:"1.8rem",fontWeight:700,lineHeight:1 }}>${finalPrice}</div>
-                      {sub!=="none" && <div style={{ fontFamily:"'Lato',sans-serif",color:"#4A7C45",fontSize:".68rem",fontWeight:700 }}>was ${p.price}</div>}
-                    </div>
-                  </div>
-                  <div style={{ background:"#FBF5E8",borderRadius:8,padding:"10px 14px",marginBottom:16,border:"1px solid rgba(196,118,42,.12)" }}>
-                    <div style={{ fontFamily:"'Lato',sans-serif",color:"#8B6040",fontSize:".65rem",fontWeight:700,letterSpacing:".12em",textTransform:"uppercase",marginBottom:3 }}>Flavor Notes</div>
-                    <div style={{ fontFamily:"'Playfair Display',serif",color:"#2C1505",fontSize:".9rem",fontStyle:"italic" }}>Chocolate · Brown Sugar · Smooth Finish</div>
-                  </div>
-                  <div style={{ fontFamily:"'Lato',sans-serif",color:"#8B6040",fontSize:".78rem",marginBottom:16,lineHeight:1.7 }}>
-                    Medium-Dark roast · Dominican Republic highlands · Roasted to order
-                  </div>
-                  <button className="btn" onClick={()=>handleAdd(p)}
-                    style={{ width:"100%",padding:"13px",fontSize:".82rem",background: added===p.id ? "#4A7C45" : undefined }}>
-                    {added===p.id ? "✓ Added to Cart!" : `Add to Cart — $${finalPrice}`}
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Grind guide */}
-        <div style={{ background:"#FFFFFF",borderRadius:14,padding:"28px 24px",border:"1.5px solid rgba(196,118,42,.18)",marginTop:40 }}>
-          <h3 style={{ fontFamily:"'Playfair Display',serif",color:"#2C1505",fontSize:"1.2rem",fontWeight:700,marginBottom:18,textAlign:"center" }}>Which Grind Do I Need?</h3>
-          <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))",gap:12 }}>
-            {[
-              { g:"Whole Bean",    brew:"Grind yourself",   icon:"⚙️" },
-              { g:"Greca Grind",   brew:"Moka / Greca pot", icon:"🫖" },
-              { g:"Drip Grind",    brew:"Drip coffee maker",icon:"💧" },
-              { g:"Espresso Grind",brew:"Espresso machine", icon:"⚡" },
-            ].map(x=>(
-              <div key={x.g} style={{ background:"#FBF5E8",borderRadius:8,padding:"12px",textAlign:"center",border:"1px solid rgba(196,118,42,.12)" }}>
-                <div style={{ fontSize:"1.5rem",marginBottom:5 }}>{x.icon}</div>
-                <div style={{ fontFamily:"'Lato',sans-serif",color:"#2C1505",fontSize:".78rem",fontWeight:700,marginBottom:2 }}>{x.g}</div>
-                <div style={{ fontFamily:"'Lato',sans-serif",color:"#8B6040",fontSize:".68rem",fontWeight:300 }}>{x.brew}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+header{
+    background:linear-gradient(135deg,#2b1305,#5c2e0e);
+    color:white;
+    text-align:center;
+    padding:40px 20px;
 }
 
-function LoyaltyPage({ points }) {
-  const tiers = [
-    { name:"Bean",    min:0,   max:199,  icon:"🌱", color:"#6B8C5A", perks:["1 pt per $1","Birthday bonus","Early batch access"] },
-    { name:"Roaster", min:200, max:499,  icon:"🔥", color:"#C4762A", perks:["1.5 pts per $1","Free shipping","Merch discount"] },
-    { name:"Reserve", min:500, max:999,  icon:"⭐", color:"#B87333", perks:["2 pts per $1","Free bag/500 pts","10% off always"] },
-    { name:"Maestro", min:1000,max:9999, icon:"👑", color:"#5C2E0E", perks:["3 pts per $1","Monthly surprise","Wholesale pricing"] },
-  ];
-  const current = [...tiers].reverse().find(t=>points>=t.min)||tiers[0];
-  const next = tiers[tiers.indexOf(current)+1];
-  const pct = next ? ((points-current.min)/(next.min-current.min))*100 : 100;
-
-  return (
-    <div style={{ paddingTop:64 }}>
-      <div style={{ background:"linear-gradient(160deg,#3B1F0A,#5C2E0E)",padding:"56px 20px",textAlign:"center" }}>
-        <div style={{ color:"#E8A020",fontFamily:"'Lato',sans-serif",fontWeight:700,letterSpacing:".22em",textTransform:"uppercase",fontSize:".72rem",marginBottom:10 }}>Café Cacao Rewards</div>
-        <h1 style={{ fontFamily:"'Playfair Display',serif",color:"#FBF5E8",fontSize:"clamp(2rem,5vw,2.8rem)",fontWeight:700 }}>The Ritual Rewards Program</h1>
-      </div>
-
-      {/* Balance card */}
-      <div style={{ background:"#5C2E0E",padding:"24px 20px" }}>
-        <div style={{ maxWidth:700,margin:"0 auto",display:"flex",alignItems:"center",gap:24,flexWrap:"wrap" }}>
-          <div style={{ background:"#3B1F0A",borderRadius:12,padding:"12px 24px",textAlign:"center" }}>
-            <div style={{ fontFamily:"'Playfair Display',serif",color:"#FBF5E8",fontSize:"2.4rem",fontWeight:900,lineHeight:1 }}>{points}</div>
-            <div style={{ fontFamily:"'Lato',sans-serif",color:"#C4762A",fontSize:".65rem",fontWeight:700,letterSpacing:".12em",textTransform:"uppercase",marginTop:3 }}>Points</div>
-          </div>
-          <div style={{ flex:1 }}>
-            <div style={{ fontFamily:"'Playfair Display',serif",color:"#FBF5E8",fontSize:"1.2rem",fontWeight:700,marginBottom:4 }}>{current.icon} {current.name} Member</div>
-            {next && <div style={{ fontFamily:"'Lato',sans-serif",color:"#E8D5B0",fontSize:".78rem",marginBottom:8 }}>{next.min-points} pts to {next.name}</div>}
-            {next && <div style={{ background:"rgba(255,255,255,.15)",borderRadius:6,height:8,overflow:"hidden" }}>
-              <div style={{ width:`${Math.min(pct,100)}%`,height:"100%",background:"linear-gradient(90deg,#C4762A,#E8A020)",transition:"width 1s ease" }} />
-            </div>}
-          </div>
-        </div>
-      </div>
-
-      <div style={{ maxWidth:900,margin:"0 auto",padding:"40px 24px" }}>
-        <h2 style={{ fontFamily:"'Playfair Display',serif",color:"#2C1505",fontSize:"1.6rem",fontWeight:700,marginBottom:20 }}>Membership Tiers</h2>
-        <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:16,marginBottom:40 }}>
-          {tiers.map(t=>{
-            const active = t.name===current.name;
-            return (
-              <div key={t.name} style={{ background: active ? t.color : "#FFFFFF", borderRadius:12,padding:"20px",border:`2px solid ${active?t.color:"rgba(196,118,42,.18)"}`,boxShadow:active?`0 4px 20px ${t.color}44`:"none" }}>
-                <div style={{ fontSize:"2rem",marginBottom:8 }}>{t.icon}</div>
-                <div style={{ fontFamily:"'Playfair Display',serif",color: active ? "#FFF" : "#2C1505",fontSize:"1.2rem",fontWeight:700,marginBottom:4 }}>{t.name}</div>
-                <div style={{ fontFamily:"'Lato',sans-serif",color: active ? "rgba(255,255,255,.7)" : "#8B6040",fontSize:".72rem",marginBottom:12 }}>{t.min}–{t.max===9999?"∞":t.max} pts</div>
-                {t.perks.map(p=>(
-                  <div key={p} style={{ display:"flex",gap:6,marginBottom:5 }}>
-                    <span style={{ color: active ? "#FFF" : t.color,fontSize:".7rem",fontWeight:700 }}>✓</span>
-                    <span style={{ fontFamily:"'Lato',sans-serif",color: active ? "rgba(255,255,255,.85)" : "#5C3317",fontSize:".82rem",fontWeight:300 }}>{p}</span>
-                  </div>
-                ))}
-                {active && <div style={{ marginTop:12,background:"rgba(255,255,255,.2)",color:"#FFF",borderRadius:20,padding:"3px 10px",fontFamily:"'Lato',sans-serif",fontSize:".65rem",fontWeight:800,letterSpacing:".1em",textTransform:"uppercase",display:"inline-block" }}>YOUR TIER</div>}
-              </div>
-            );
-          })}
-        </div>
-
-        <h2 style={{ fontFamily:"'Playfair Display',serif",color:"#2C1505",fontSize:"1.5rem",fontWeight:700,marginBottom:20 }}>Redeem Points</h2>
-        <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:14 }}>
-          {[
-            { pts:100, label:"$5 off",         icon:"💵",color:"#4A7C45" },
-            { pts:200, label:"Free shipping",  icon:"📦",color:"#2C6FAA" },
-            { pts:350, label:"$20 off",         icon:"💰",color:"#C4762A" },
-            { pts:500, label:"Free 6oz bag",   icon:"☕",color:"#8B5A2B" },
-            { pts:750, label:"Free 12oz bag",  icon:"🏆",color:"#B87333" },
-            { pts:1000,label:"$75 credit",     icon:"🎁",color:"#5C2E0E" },
-          ].map(r=>{
-            const can = points>=r.pts;
-            return (
-              <div key={r.pts} style={{ background:"#FFFFFF",border:`2px solid ${can?r.color:"rgba(196,118,42,.12)"}`,borderRadius:12,padding:"18px 14px",textAlign:"center",opacity:can?1:0.5 }}>
-                <div style={{ fontSize:"2rem",marginBottom:8 }}>{r.icon}</div>
-                <div style={{ fontFamily:"'Playfair Display',serif",color:"#2C1505",fontSize:".92rem",fontWeight:700,marginBottom:4 }}>{r.label}</div>
-                <div style={{ fontFamily:"'Lato',sans-serif",color:r.color,fontSize:".8rem",fontWeight:800,marginBottom:12 }}>{r.pts} pts</div>
-                <button style={{ background:can?r.color:"rgba(180,160,140,.3)",color:can?"#FFF":"#B8A07A",border:"none",borderRadius:6,padding:"8px 0",fontFamily:"'Lato',sans-serif",fontSize:".72rem",fontWeight:700,cursor:can?"pointer":"default",width:"100%" }}>
-                  {can?"Redeem →":`+${r.pts-points} pts`}
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
+.logo{
+    max-width:220px;
+    width:100%;
+    height:auto;
+    margin-bottom:20px;
 }
 
-function OurStory() {
-  return (
-    <div style={{ paddingTop:64 }}>
-      <div style={{ position:"relative",height:360,overflow:"hidden" }}>
-        <div style={{ position:"absolute",inset:0,background:"linear-gradient(160deg,#1A0D02,#3B1F0A)" }} />
-        <div style={{ position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-end",padding:"40px 24px" }}>
-          <div style={{ color:"#C4762A",fontFamily:"'Lato',sans-serif",fontWeight:700,letterSpacing:".22em",textTransform:"uppercase",fontSize:".72rem",marginBottom:10 }}>Our Story</div>
-          <h1 style={{ fontFamily:"'Playfair Display',serif",color:"#FBF5E8",fontSize:"clamp(2rem,5vw,3.2rem)",fontWeight:700,textAlign:"center",textShadow:"0 2px 20px rgba(0,0,0,.4)" }}>Where Every Bean Has a Name</h1>
-        </div>
-      </div>
-      <div style={{ maxWidth:780,margin:"0 auto",padding:"56px 24px" }}>
-        {[
-          { n:"01", title:"The Beginning",  body:"Café Cacao was born from a simple conviction: the best coffee in the world grows in the Dominican Republic, and nobody knows it yet. Our founders grew up drinking coffee brewed in a greca — the kind that fills a room, starts a morning, and connects generations." },
-          { n:"02", title:"The Farms",      body:"We source from family farms in the mountain regions of the Dominican Republic — volcanic soil, ideal altitude, and farmers who've been perfecting their craft for generations. We know these farmers by name. We visit them. We pay fair prices." },
-          { n:"03", title:"The Roast",      body:"Every bag is roasted in small batches — never more than what we can ship within 24 hours. We don't pre-roast. We don't warehouse bags. When you order, we roast. That's the difference you taste." },
-          { n:"04", title:"The Mission",    body:"Café Cacao exists to bring Dominican coffee culture to the world while ensuring the farmers and families behind every bean share in that story. A portion of every sale goes directly back to the farming communities." },
-        ].map((s,i)=>(
-          <div key={i} style={{ borderLeft:"3px solid #C4762A",paddingLeft:28,paddingBottom:40,position:"relative",marginBottom:4 }}>
-            <div style={{ position:"absolute",left:-7,top:6,width:11,height:11,borderRadius:"50%",background:"#C4762A",boxShadow:"0 0 12px rgba(196,118,42,.5)" }} />
-            <div style={{ color:"#C4762A",fontFamily:"'Lato',sans-serif",fontSize:".68rem",fontWeight:700,letterSpacing:".22em",textTransform:"uppercase",marginBottom:8 }}>{s.n}</div>
-            <h2 style={{ fontFamily:"'Playfair Display',serif",color:"#2C1505",fontSize:"clamp(1.3rem,3vw,1.8rem)",fontWeight:700,marginBottom:12 }}>{s.title}</h2>
-            <p style={{ fontFamily:"'Lato',sans-serif",color:"#5C3317",fontSize:".95rem",lineHeight:1.9,fontWeight:300 }}>{s.body}</p>
-          </div>
-        ))}
-        <div style={{ background:"#3B1F0A",borderRadius:14,padding:"32px 28px",textAlign:"center",marginTop:20 }}>
-          <div style={{ fontSize:"2rem",marginBottom:8 }}>"</div>
-          <p style={{ fontFamily:"'Playfair Display',serif",color:"#FBF5E8",fontSize:"clamp(1.1rem,2.5vw,1.4rem)",fontStyle:"italic",fontWeight:600,lineHeight:1.65,marginBottom:12 }}>Coffee is not just a drink. It's a ritual, a memory, and a connection to home.</p>
-          <div style={{ color:"#C4762A",fontFamily:"'Lato',sans-serif",fontSize:".82rem",fontWeight:700,letterSpacing:".1em",textTransform:"uppercase" }}>— The Café Cacao Founders</div>
-        </div>
-      </div>
-    </div>
-  );
+h1{
+    font-family:"Playfair Display",serif;
+    font-size:clamp(2rem,6vw,4rem);
 }
 
-function FAQ() {
-  const [open, setOpen] = useState(null);
-  const items = [
-    { q:"Where does your coffee come from?",        a:"All our coffee is sourced directly from family farms in the Dominican Republic — specifically the highland regions known for volcanic soil and ideal growing altitude." },
-    { q:"How fresh is your coffee?",                a:"Very fresh. Your beans are roasted within 24–48 hours of your order, then shipped immediately. We never pre-roast or sit on inventory." },
-    { q:"What grind options do you offer?",         a:"Whole Bean, Espresso Grind, Drip Grind, and Greca (Moka Pot) Grind. We recommend Whole Bean for maximum freshness." },
-    { q:"Do you offer subscriptions?",              a:"Yes! Weekly, biweekly, and monthly subscriptions are available. Subscribers get 10% off every order and free shipping." },
-    { q:"What sizes do you sell?",                  a:"We currently offer 6 oz ($12.99), 12 oz ($21.99), and 16 oz ($27.99) bags — all the same single-origin Dominican coffee." },
-    { q:"What is your return policy?",              a:"If you're not satisfied for any reason, contact us within 7 days of your order and we'll make it right — replacement, credit, or refund." },
-  ];
-  return (
-    <div style={{ paddingTop:64 }}>
-      <div style={{ background:"linear-gradient(160deg,#3B1F0A,#5C2E0E)",padding:"56px 20px",textAlign:"center" }}>
-        <div style={{ color:"#E8A020",fontFamily:"'Lato',sans-serif",fontWeight:700,letterSpacing:".22em",textTransform:"uppercase",fontSize:".72rem",marginBottom:10 }}>Got Questions?</div>
-        <h1 style={{ fontFamily:"'Playfair Display',serif",color:"#FBF5E8",fontSize:"clamp(2rem,5vw,3rem)",fontWeight:700 }}>FAQ</h1>
-      </div>
-      <div style={{ maxWidth:720,margin:"0 auto",padding:"48px 24px" }}>
-        {items.map((item,i)=>(
-          <div key={i} style={{ background:"#FFFFFF",borderRadius:10,marginBottom:12,border:"1.5px solid rgba(196,118,42,.18)",overflow:"hidden" }}>
-            <button onClick={()=>setOpen(open===i?null:i)}
-              style={{ width:"100%",textAlign:"left",background:"none",border:"none",padding:"18px 22px",display:"flex",justifyContent:"space-between",alignItems:"center",cursor:"pointer" }}>
-              <span style={{ fontFamily:"'Playfair Display',serif",color:"#2C1505",fontSize:"1rem",fontWeight:600 }}>{item.q}</span>
-              <span style={{ color:"#C4762A",fontSize:"1.2rem",fontWeight:700,flexShrink:0,marginLeft:12 }}>{open===i?"−":"+"}</span>
-            </button>
-            {open===i && (
-              <div style={{ padding:"0 22px 18px",fontFamily:"'Lato',sans-serif",color:"#5C3317",fontSize:".9rem",lineHeight:1.8,fontWeight:300 }}>{item.a}</div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+.tagline{
+    color:#E8A020;
+    letter-spacing:3px;
+    margin-top:10px;
 }
 
-function ContactPage() {
-  const [sent, setSent] = useState(false);
-  const [form, setForm] = useState({ name:"",email:"",message:"" });
-  return (
-    <div style={{ paddingTop:64 }}>
-      <div style={{ background:"linear-gradient(160deg,#3B1F0A,#5C2E0E)",padding:"56px 20px",textAlign:"center" }}>
-        <div style={{ color:"#E8A020",fontFamily:"'Lato',sans-serif",fontWeight:700,letterSpacing:".22em",textTransform:"uppercase",fontSize:".72rem",marginBottom:10 }}>Get In Touch</div>
-        <h1 style={{ fontFamily:"'Playfair Display',serif",color:"#FBF5E8",fontSize:"clamp(2rem,5vw,3rem)",fontWeight:700 }}>Contact Us</h1>
-      </div>
-      <div style={{ maxWidth:600,margin:"0 auto",padding:"48px 24px" }}>
-        {sent ? (
-          <div style={{ textAlign:"center",padding:"40px 20px" }}>
-            <div style={{ fontSize:"3rem",marginBottom:12 }}>✅</div>
-            <h2 style={{ fontFamily:"'Playfair Display',serif",color:"#2C1505",fontSize:"1.6rem",marginBottom:10 }}>Message Sent!</h2>
-            <p style={{ fontFamily:"'Lato',sans-serif",color:"#5C3317",fontSize:".95rem" }}>We'll get back to you within 24 hours.</p>
-          </div>
-        ) : (
-          <div style={{ background:"#FFFFFF",borderRadius:14,padding:"32px 28px",border:"1.5px solid rgba(196,118,42,.18)" }}>
-            <div style={{ display:"grid",gap:16 }}>
-              {[{l:"Name",k:"name",t:"text"},{l:"Email",k:"email",t:"email"}].map(f=>(
-                <div key={f.k}>
-                  <label style={{ display:"block",fontFamily:"'Lato',sans-serif",fontSize:".68rem",fontWeight:700,letterSpacing:".15em",textTransform:"uppercase",color:"#8B6040",marginBottom:5 }}>{f.l}</label>
-                  <input type={f.t} value={form[f.k]} onChange={e=>setForm({...form,[f.k]:e.target.value})} placeholder={f.l} />
-                </div>
-              ))}
-              <div>
-                <label style={{ display:"block",fontFamily:"'Lato',sans-serif",fontSize:".68rem",fontWeight:700,letterSpacing:".15em",textTransform:"uppercase",color:"#8B6040",marginBottom:5 }}>Message</label>
-                <textarea value={form.message} onChange={e=>setForm({...form,message:e.target.value})} rows={5} style={{ width:"100%",padding:"10px 14px",resize:"vertical" }} placeholder="How can we help?" />
-              </div>
-              <button className="btn" onClick={()=>form.name&&form.email&&setSent(true)} style={{ width:"100%",padding:"14px" }}>Send Message</button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+.hero{
+    padding:60px 20px;
+    text-align:center;
 }
 
-function MyAccount({ onLogin }) {
-  const [mode, setMode]     = useState("login");
-  const [email, setEmail]   = useState("");
-  const [pass,  setPass]    = useState("");
-  const [name,  setName]    = useState("");
-  const [err,   setErr]     = useState("");
-
-  const submit = () => {
-    if(!email||!pass){setErr("Please fill all fields.");return;}
-    if(mode==="signup"&&!name){setErr("Please enter your name.");return;}
-    if(pass.length<6){setErr("Password must be 6+ characters.");return;}
-    onLogin({ name: mode==="signup"?name:"Alex Rivera", email, avatar:(name||"A")[0].toUpperCase(), points:145 });
-  };
-
-  return (
-    <div style={{ paddingTop:64,minHeight:"100vh",background:"#FBF5E8",display:"flex",alignItems:"center",justifyContent:"center",padding:"80px 20px" }}>
-      <div style={{ background:"#FFFFFF",border:"2px solid rgba(196,118,42,.22)",borderRadius:14,padding:"40px 32px",maxWidth:400,width:"100%",boxShadow:"0 16px 48px rgba(59,31,10,.12)",position:"relative" }}>
-        <div style={{ position:"absolute",top:0,left:0,right:0,height:4,background:"linear-gradient(90deg,#3B1F0A,#C4762A,#E8A020,#C4762A,#3B1F0A)",borderRadius:"14px 14px 0 0" }} />
-        <div style={{ textAlign:"center",marginBottom:24 }}>
-          <div style={{ fontSize:"2.5rem",marginBottom:8 }}>☕</div>
-          <div style={{ fontFamily:"'Playfair Display',serif",color:"#2C1505",fontSize:"1.4rem",fontWeight:700 }}>Café Cacao</div>
-          <div style={{ fontFamily:"'Lato',sans-serif",color:"#C4762A",fontSize:".7rem",fontWeight:700,letterSpacing:".2em",textTransform:"uppercase",marginTop:4 }}>{mode==="login"?"Welcome back":"Join the ritual"}</div>
-        </div>
-        <div style={{ display:"flex",background:"#FBF5E8",borderRadius:8,padding:4,marginBottom:22,border:"1px solid rgba(196,118,42,.18)" }}>
-          {["login","signup"].map(m=>(
-            <button key={m} onClick={()=>{setMode(m);setErr("");}} style={{ flex:1,padding:"9px",borderRadius:6,border:"none",background:mode===m?"#FFFFFF":"transparent",color:mode===m?"#2C1505":"#8B6040",fontFamily:"'Lato',sans-serif",fontSize:".82rem",fontWeight:700,cursor:"pointer",boxShadow:mode===m?"0 2px 8px rgba(59,31,10,.08)":"none" }}>
-              {m==="login"?"Log In":"Sign Up"}
-            </button>
-          ))}
-        </div>
-        <div style={{ display:"grid",gap:12 }}>
-          {mode==="signup"&&<input value={name} onChange={e=>setName(e.target.value)} placeholder="Full name" />}
-          <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email address" />
-          <input type="password" value={pass} onChange={e=>setPass(e.target.value)} placeholder="Password (6+ chars)" />
-          {err&&<div style={{ color:"#C0392B",fontFamily:"'Lato',sans-serif",fontSize:".8rem",background:"rgba(192,57,43,.07)",padding:"8px 12px",borderRadius:6 }}>{err}</div>}
-          <button className="btn" onClick={submit} style={{ width:"100%",padding:"13px" }}>{mode==="login"?"Log In →":"Create Account →"}</button>
-        </div>
-      </div>
-    </div>
-  );
+.hero p{
+    max-width:700px;
+    margin:20px auto;
+    line-height:1.8;
+    font-size:1.1rem;
 }
 
-function ProfilePage({ user, points, setPage }) {
-  return (
-    <div style={{ paddingTop:64 }}>
-      <div style={{ background:"linear-gradient(160deg,#3B1F0A,#5C2E0E)",padding:"48px 24px 0" }}>
-        <div style={{ maxWidth:900,margin:"0 auto" }}>
-          <div style={{ display:"flex",alignItems:"flex-end",gap:20,paddingBottom:0,flexWrap:"wrap" }}>
-            <div style={{ width:72,height:72,borderRadius:"50%",background:"linear-gradient(135deg,#C4762A,#E8A020)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Playfair Display',serif",fontSize:"2rem",fontWeight:700,color:"#fff",marginBottom:-24,border:"3px solid rgba(232,160,32,.4)",flexShrink:0 }}>{user.avatar}</div>
-            <div style={{ paddingBottom:28 }}>
-              <div style={{ fontFamily:"'Lato',sans-serif",color:"#C4762A",fontSize:".68rem",fontWeight:700,letterSpacing:".15em",textTransform:"uppercase",marginBottom:4 }}>Member since {new Date().toLocaleDateString("en-US",{month:"long",year:"numeric"})}</div>
-              <h1 style={{ fontFamily:"'Playfair Display',serif",color:"#FBF5E8",fontSize:"clamp(1.5rem,3vw,2rem)",fontWeight:700,marginBottom:2 }}>{user.name}</h1>
-              <div style={{ fontFamily:"'Lato',sans-serif",color:"rgba(232,213,176,.65)",fontSize:".82rem" }}>{user.email}</div>
-            </div>
-            <div style={{ marginLeft:"auto",paddingBottom:28,display:"flex",gap:12,flexWrap:"wrap" }}>
-              {[{v:points,l:"Points"},{v:"Bean 🌱",l:"Tier"},{v:"0",l:"Orders"}].map(s=>(
-                <div key={s.l} style={{ background:"rgba(196,118,42,.12)",border:"1px solid rgba(196,118,42,.3)",borderRadius:8,padding:"8px 16px",textAlign:"center" }}>
-                  <div style={{ fontFamily:"'Playfair Display',serif",color:"#FBF5E8",fontSize:"1.3rem",fontWeight:700 }}>{s.v}</div>
-                  <div style={{ fontFamily:"'Lato',sans-serif",color:"rgba(232,213,176,.6)",fontSize:".65rem",fontWeight:600,letterSpacing:".1em",textTransform:"uppercase" }}>{s.l}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div style={{ display:"flex",gap:2,marginTop:28,overflowX:"auto" }}>
-            {["Overview","Orders","Preferences"].map(t=>(
-              <div key={t} style={{ padding:"12px 18px",background:"rgba(232,213,176,.10)",border:"none",borderBottom:"2px solid #C4762A",color:"#C4762A",fontFamily:"'Lato',sans-serif",fontSize:".78rem",fontWeight:700,letterSpacing:".06em",textTransform:"uppercase" }}>{t}</div>
-            ))}
-          </div>
-        </div>
-      </div>
-      <div style={{ maxWidth:900,margin:"0 auto",padding:"40px 24px" }}>
-        <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:16,marginBottom:32 }}>
-          {[
-            { icon:"⭐",label:"Loyalty Points",val:points,action:()=>setPage("Loyalty") },
-            { icon:"📋",label:"Total Orders",  val:"0",   action:()=>{} },
-            { icon:"🔄",label:"Subscription",  val:"None",action:()=>setPage("Shop") },
-            { icon:"❤️",label:"Favorites",     val:"0",   action:()=>setPage("Shop") },
-          ].map(s=>(
-            <div key={s.label} style={{ background:"#FFFFFF",border:"1.5px solid rgba(196,118,42,.18)",borderRadius:10,padding:"20px 16px",textAlign:"center",cursor:"pointer" }} onClick={s.action}>
-              <div style={{ fontSize:"1.8rem",marginBottom:6 }}>{s.icon}</div>
-              <div style={{ fontFamily:"'Playfair Display',serif",color:"#C4762A",fontSize:"1.3rem",fontWeight:700 }}>{s.val}</div>
-              <div style={{ fontFamily:"'Lato',sans-serif",color:"#8B6040",fontSize:".72rem",fontWeight:500,marginTop:2 }}>{s.label}</div>
-            </div>
-          ))}
-        </div>
-        <button className="btn" onClick={()=>setPage("Shop")} style={{ padding:"12px 28px" }}>Start Shopping →</button>
-      </div>
-    </div>
-  );
+.btn{
+    display:inline-block;
+    background:#C4762A;
+    color:white;
+    text-decoration:none;
+    padding:14px 28px;
+    border-radius:30px;
+    margin:10px;
+    font-weight:bold;
 }
 
-export default function App() {
-  const [page,    setPage]    = useState("Home");
-  const [cart,    setCart]    = useState([]);
-  const [user,    setUser]    = useState(null);
-  const [points]              = useState(145);
+.section{
+    max-width:1200px;
+    margin:auto;
+    padding:60px 20px;
+}
 
-  const addToCart = (p) => setCart(c=>[...c,p]);
+.section-title{
+    text-align:center;
+    font-family:"Playfair Display",serif;
+    margin-bottom:40px;
+    font-size:2rem;
+}
 
-  const renderPage = () => {
-    switch(page) {
-      case "Home":       return <HomePage setPage={setPage} />;
-      case "Shop":       return <ShopPage addToCart={addToCart} />;
-      case "Loyalty":    return <LoyaltyPage points={points} />;
-      case "Our Story":  return <OurStory />;
-      case "FAQ":        return <FAQ />;
-      case "Contact":    return <ContactPage />;
-      case "My Account": return user ? <ProfilePage user={user} points={points} setPage={setPage} /> : <MyAccount onLogin={u=>{setUser(u);}} />;
-      default:           return <HomePage setPage={setPage} />;
+.products{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:25px;
+}
+
+.card{
+    background:white;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 4px 15px rgba(0,0,0,.1);
+}
+
+.card-top{
+    background:#8B5A2B;
+    color:white;
+    text-align:center;
+    padding:30px;
+    font-size:3rem;
+}
+
+.card-body{
+    padding:20px;
+}
+
+.price{
+    color:#C4762A;
+    font-size:1.8rem;
+    font-weight:bold;
+}
+
+.features{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
+
+.feature{
+    text-align:center;
+    padding:20px;
+}
+
+.feature span{
+    font-size:2rem;
+}
+
+.about{
+    background:white;
+}
+
+footer{
+    background:#2C1505;
+    color:white;
+    text-align:center;
+    padding:40px 20px;
+}
+
+@media(max-width:768px){
+    .hero{
+        padding:40px 20px;
     }
-  };
-
-  return (
-    <div>
-      <style>{CSS}</style>
-      <style>{`@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}`}</style>
-      <Nav page={page} setPage={setPage} cartCount={cart.length} />
-      <main>{renderPage()}</main>
-    </div>
-  );
 }
+</style>
+</head>
+
+<body>
+
+<header>
+
+<img src="Cacaoweb logo.jpg" alt="Cafe Cacao Logo" class="logo">
+
+<h1>Café Cacao</h1>
+
+<p class="tagline">
+DOMINICAN REPUBLIC • FRESH ROASTED
+</p>
+
+</header>
+
+<section class="hero">
+
+<h2>Coffee Is Our Passion</h2>
+
+<p>
+Single-origin Dominican coffee roasted to order and shipped fresh.
+No warehouses. No stale coffee. Just authentic Dominican flavor.
+</p>
+
+<a href="#shop" class="btn">Shop Coffee</a>
+
+<a href="#story" class="btn">Our Story</a>
+
+</section>
+
+<section class="section">
+
+<h2 class="section-title">Why Café Cacao?</h2>
+
+<div class="features">
+
+<div class="feature">
+<span>🌍</span>
+<h3>Dominican Origin</h3>
+<p>Family farms from the mountains of the Dominican Republic.</p>
+</div>
+
+<div class="feature">
+<span>⚡</span>
+<h3>Roasted To Order</h3>
+<p>Freshly roasted after your order is placed.</p>
+</div>
+
+<div class="feature">
+<span>📦</span>
+<h3>Ships Fast</h3>
+<p>Shipped within 24 hours whenever possible.</p>
+</div>
+
+<div class="feature">
+<span>🌱</span>
+<h3>Single Origin</h3>
+<p>One farm. One flavor. Complete traceability.</p>
+</div>
+
+</div>
+
+</section>
+
+<section id="shop" class="section">
+
+<h2 class="section-title">Our Coffee</h2>
+
+<div class="products">
+
+<div class="card">
+<div class="card-top">☕</div>
+<div class="card-body">
+<h3>6 oz Bag</h3>
+<p class="price">$12.99</p>
+<p>Perfect for trying Café Cacao.</p>
+</div>
+</div>
+
+<div class="card">
+<div class="card-top">☕</div>
+<div class="card-body">
+<h3>12 oz Bag</h3>
+<p class="price">$21.99</p>
+<p>Most popular size.</p>
+</div>
+</div>
+
+<div class="card">
+<div class="card-top">☕</div>
+<div class="card-body">
+<h3>16 oz Bag</h3>
+<p class="price">$27.99</p>
+<p>Best value.</p>
+</div>
+</div>
+
+</div>
+
+</section>
+
+<section id="story" class="section about">
+
+<h2 class="section-title">Our Story</h2>
+
+<p style="max-width:800px;margin:auto;text-align:center;line-height:1.8;">
+Café Cacao was created to bring authentic Dominican coffee culture
+to coffee lovers everywhere. Our mission is simple:
+fresh coffee, direct relationships with farmers, and a better cup every morning.
+</p>
+
+</section>
+
+<footer>
+
+<h3>Café Cacao</h3>
+
+<p>Where Every Sip Is A Moment</p>
+
+<p style="margin-top:15px;">
+© 2026 Café Cacao
+</p>
+
+</footer>
+
+</body>
+</html>

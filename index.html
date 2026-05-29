@@ -1,4 +1,29 @@
-import { useState, useEffect, useRef } from "react";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#3B1F0A" />
+  <title>Cafe Cacao - Dominican Coffee</title>
+  <meta name="description" content="Single-Origin Dominican Coffee, Roasted With Purpose." />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+    body { margin: 0; padding: 0; overflow-x: hidden; background: #FBF5E8; }
+    #root { min-height: 100vh; }
+  </style>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel" data-presets="react">
+    const { useState, useEffect, useRef } = React;
+
+
 
 // ============================================================
 // CONFIGURATION — Edit these to update site content easily
@@ -3568,7 +3593,7 @@ function CustomerProfile({ user, setUser, setPage, orders, points, setPoints }) 
   );
 }
 
-export default function App() {
+function App() {
   const [page,           setPage]           = useState("Home");
   const [cart,           setCart]           = useState([]);
   const [points,         setPoints]         = useState(145);
@@ -3644,3 +3669,9 @@ export default function App() {
     </div>
   );
 }
+
+
+    ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+  </script>
+</body>
+</html>
